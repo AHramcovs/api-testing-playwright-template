@@ -24,12 +24,13 @@ test.describe('GET /product/{id}', () => {
     const lastProductId: number = allProductBody[allProductBody.length - 1].id
 
     const oneProductResponse = await request.get(
-        `https://shop.tl-academy.ee/api/products/${lastProductId +1}`,
+      `https://shop.tl-academy.ee/api/products/${lastProductId + 1}`,
     )
     // parse raw response body to json
     const oneProductResponseBody = await oneProductResponse.json()
     const oneProductStatusCode = oneProductResponse.status()
-    console.log(lastProductId)
+    console.log('All products:', allProductBody)
+    console.log(lastProductId + 1)
     // Log the response status, body and headers
     console.log('response body:', oneProductResponseBody)
     // Check if the response status is 404
