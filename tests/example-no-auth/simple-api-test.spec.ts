@@ -17,20 +17,19 @@ test.describe('GET /product/{id}', () => {
     expect(statusCode).toBe(StatusCodes.OK)
   })
 
-  test('get product with correct id should receive code 404', async ({ request }) => {
+  test('get product with non-existing id should receive code 404', async ({ request }) => {
     // Build and send a GET request to the server
     const allProductResponse = await request.get('https://shop.tl-academy.ee/api/products/')
     const allProductBody = await allProductResponse.json()
-    const lastProductId: number = allProductBody.length
+    const lastProductId: number = allProductBody[allProductBody.length - 1].id
 
     const oneProductResponse = await request.get(
-      'https://shop.tl-academy.ee/api/products/' + lastProductId + 1,
+        `https://shop.tl-academy.ee/api/products/${lastProductId +1}`,
     )
-
     // parse raw response body to json
     const oneProductResponseBody = await oneProductResponse.json()
     const oneProductStatusCode = oneProductResponse.status()
-
+    console.log(lastProductId)
     // Log the response status, body and headers
     console.log('response body:', oneProductResponseBody)
     // Check if the response status is 404
@@ -119,13 +118,13 @@ test.describe('POST /product', () => {
     expect(typeof responseBody.price).toBe('undefined')
   })
 
-  test('post product with incorrect category data should receive code 400', async ({ request }) => {
+  test('post product with negative quantity should receive code 400', async ({ request }) => {
     // prepare request body
     const requestBody = {
       name: 'Orange',
-      category: '',
+      category: 'Fruits',
       price: 2.39,
-      quantity: 10,
+      quantity: -1,
     }
     // Send a POST request to the server
     const response = await request.post('https://shop.tl-academy.ee/api/products', {
