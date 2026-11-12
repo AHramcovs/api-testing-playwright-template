@@ -18,23 +18,19 @@ test.describe('GET /product/{id}', () => {
   })
 
   test('get product with non-existing id should receive code 404', async ({ request }) => {
-    // Build and send a GET request to the server
     const allProductResponse = await request.get('https://shop.tl-academy.ee/api/products/')
-    const allProductBody = await allProductResponse.json()
-    const lastProductId: number = allProductBody[allProductBody.length - 1].id
+    expect(allProductResponse.status()).toBe(StatusCodes.OK)
+    const allProductBody: { id: number }[] = await allProductResponse.json()
+    const highestProductId = allProductBody.reduce(
+      (highest, product) => Math.max(highest, product.id),
+      0,
+    )
+    const nonExistingProductId = highestProductId + 1000
 
     const oneProductResponse = await request.get(
-      `https://shop.tl-academy.ee/api/products/${lastProductId + 1}`,
+      `https://shop.tl-academy.ee/api/products/${nonExistingProductId}`,
     )
-    // parse raw response body to json
-    const oneProductResponseBody = await oneProductResponse.json()
-    const oneProductStatusCode = oneProductResponse.status()
-    console.log('All products:', allProductBody)
-    console.log(lastProductId + 1)
-    // Log the response status, body and headers
-    console.log('response body:', oneProductResponseBody)
-    // Check if the response status is 404
-    expect(oneProductStatusCode).toBe(StatusCodes.NOT_FOUND)
+    expect(oneProductResponse.status()).toBe(StatusCodes.NOT_FOUND)
   })
 
   test('get product with incorrect id should receive code 400 ', async ({ request }) => {
